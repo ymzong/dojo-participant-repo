@@ -10,17 +10,5 @@ public class Conversion {
             result += "X";
         }
         return result + digit[i%10];
-        /*
-        if (i >= 30) {
-            return "XXX" + digit[i%10];
-        }
-        else if (i >= 20) {
-            return "XX" + digit[i%10];
-        }
-        else if (i >= 10) {
-            return "X" + digit[i%10];
-        }
-        return digit[i];
-        */
     }
 }
