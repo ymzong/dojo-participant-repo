@@ -15,4 +15,9 @@ public class ConversionTest {
     public void shouldReturnIIIfTwo() {
         assertThat(Conversion.parse(2)).isEqualTo("II");
     }
+
+    @Test
+    public void shouldReturnIVIfFour() {
+        assertThat(Conversion.parse(4)).isEqualTo("IV");
+    }
 }
