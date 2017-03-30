@@ -70,4 +70,9 @@ public class ConversionTest {
     public void should_return_M_if_1000() {
         assertThat(Conversion.parse(1000)).isEqualTo("M");
     }
+
+    @Test
+    public void should_return_MMMMCMXCIX_if_4999() {
+        assertThat(Conversion.parse(4999)).isEqualTo("MMMMCMXCIX");
+    }
 }
