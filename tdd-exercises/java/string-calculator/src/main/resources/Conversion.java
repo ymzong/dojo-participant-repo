@@ -5,6 +5,12 @@ public class Conversion {
     static String digit[] = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX",  "X"};
 
     public static String parse(int i) {
+        String result = "";
+        for (int j = 0; j < i / 10; j++) {
+            result += "X";
+        }
+        return result + digit[i%10];
+        /*
         if (i >= 30) {
             return "XXX" + digit[i%10];
         }
@@ -15,5 +21,6 @@ public class Conversion {
             return "X" + digit[i%10];
         }
         return digit[i];
+        */
     }
 }
