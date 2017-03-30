@@ -25,4 +25,9 @@ public class ConversionTest {
     public void shouldReturnXIIfEleven() {
         assertThat(Conversion.parse(11)).isEqualTo("XI");
     }
+
+    @Test
+    public void shouldReturnXXIfTwenty() {
+        assertThat(Conversion.parse(20)).isEqualTo("XX");
+    }
 }
