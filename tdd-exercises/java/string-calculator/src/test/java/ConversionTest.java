@@ -72,6 +72,11 @@ public class ConversionTest {
     }
 
     @Test
+    public void should_return_CMXCIX_if_999() {
+        assertThat(Conversion.parse(999)).isEqualTo("CMXCIX");
+    }
+
+    @Test
     public void should_return_MMMMCMXCIX_if_4999() {
         assertThat(Conversion.parse(4999)).isEqualTo("MMMMCMXCIX");
     }
