@@ -55,4 +55,9 @@ public class ConversionTest {
     public void should_return_XCIX_if_99() {
         assertThat(Conversion.parse(99)).isEqualTo("XCIX");
     }
+
+    @Test
+    public void should_return_DI_if_501() {
+        assertThat(Conversion.parse(501)).isEqualTo("DI");
+    }
 }
