@@ -35,4 +35,9 @@ public class ConversionTest {
     public void shouldReturnXXXIXIf39() {
         assertThat(Conversion.parse(39)).isEqualTo("XXXIX");
     }
+
+    @Test
+    public void shoudlReturnXLIXIf49() {
+        assertThat(Conversion.parse(49)).isEqualTo("XLIX");
+    }
 }
