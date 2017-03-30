@@ -60,4 +60,14 @@ public class ConversionTest {
     public void should_return_DI_if_501() {
         assertThat(Conversion.parse(501)).isEqualTo("DI");
     }
+
+    @Test
+    public void should_return_DCCVII_if_707() {
+        assertThat(Conversion.parse(707)).isEqualTo("DCCVII");
+    }
+
+    @Test
+    public void should_return_M_if_1000() {
+        assertThat(Conversion.parse(1000)).isEqualTo("M");
+    }
 }
