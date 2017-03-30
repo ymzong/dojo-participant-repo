@@ -10,4 +10,9 @@ public class ConversionTest {
     public void shouldReturnIIfOne() {
         assertThat(Conversion.parse(1)).isEqualTo("I");
     }
+
+    @Test
+    public void shouldReturnIIIfTwo() {
+        assertThat(Conversion.parse(2)).isEqualTo("II");
+    }
 }
