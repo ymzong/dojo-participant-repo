@@ -45,4 +45,14 @@ public class ConversionTest {
     public void should_Return_LXXVI_if_76() {
         assertThat(Conversion.parse(76)).isEqualTo("LXXVI");
     }
+
+    @Test
+    public void should_Return_C_if_100() {
+        assertThat(Conversion.parse(100)).isEqualTo("C");
+    }
+
+    @Test
+    public void should_return_XCIX_if_99() {
+        assertThat(Conversion.parse(99)).isEqualTo("XCIX");
+    }
 }
