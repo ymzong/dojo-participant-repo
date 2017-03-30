@@ -30,4 +30,9 @@ public class ConversionTest {
     public void shouldReturnXXIfTwenty() {
         assertThat(Conversion.parse(20)).isEqualTo("XX");
     }
+
+    @Test
+    public void shouldReturnXXXIXIf39() {
+        assertThat(Conversion.parse(39)).isEqualTo("XXXIX");
+    }
 }
