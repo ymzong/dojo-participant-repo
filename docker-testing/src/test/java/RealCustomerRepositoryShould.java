@@ -28,16 +28,21 @@
 
 import can.touch.Customer;
 import can.touch.CustomerRepository;
+import can.touch.TotalOrderValue;
 import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.logging.LogDirectory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RealCustomerRepositoryShould {
     private static final Customer AARON = new Customer(2, "Aaron", "contact@email.test");
+    private static final Customer BOB = new Customer(15, "Bob", "bob@email.test");
+    private static final Customer CAROL = new Customer(20, "Carol", "carol@email.test");
 
     @Rule
     public DockerComposeRule docker = DockerComposeRule.builder()
@@ -63,6 +68,46 @@ public class RealCustomerRepositoryShould {
 
         assertThat(customer).isEqualTo(AARON);
 
+        repo.close();
+    }
+
+    @Test public void
+    return_one_customer_total_order_value() {
+        repo.insertCustomer(AARON.getId(), AARON.getName(), AARON.getContact());
+        repo.insertOrder(500, AARON.getId());
+        List<TotalOrderValue> result = repo.getTotalOrderValues();
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getCustomerId()).isEqualTo(AARON.getId());
+        assertThat(result.get(0).getOrderTotal()).isEqualTo(500);
+        repo.close();
+    }
+
+    @Test public void
+    return_one_customer_total_order_value_two_orders() {
+        repo.insertCustomer(AARON.getId(), AARON.getName(), AARON.getContact());
+        repo.insertOrder(500, AARON.getId());
+        repo.insertOrder(1000, AARON.getId());
+        List<TotalOrderValue> result = repo.getTotalOrderValues();
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).getCustomerId()).isEqualTo(AARON.getId());
+        assertThat(result.get(0).getOrderTotal()).isEqualTo(1500);
+        repo.close();
+    }
+
+    @Test public void
+    return_two_customer_total_order_values_two_orders_each() {
+        repo.insertCustomer(AARON.getId(), AARON.getName(), AARON.getContact());
+        repo.insertCustomer(BOB.getId(), BOB.getName(), BOB.getContact());
+        repo.insertOrder(500, AARON.getId());
+        repo.insertOrder(1000, AARON.getId());
+        repo.insertOrder(600, BOB.getId());
+        repo.insertOrder(2000, BOB.getId());
+        List<TotalOrderValue> result = repo.getTotalOrderValues();
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getCustomerId()).isEqualTo(AARON.getId());
+        assertThat(result.get(0).getOrderTotal()).isEqualTo(1500);
+        assertThat(result.get(1).getCustomerId()).isEqualTo(BOB.getId());
+        assertThat(result.get(1).getOrderTotal()).isEqualTo(2600);
         repo.close();
     }
 

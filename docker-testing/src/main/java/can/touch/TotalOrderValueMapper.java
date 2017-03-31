@@ -1,4 +1,4 @@
-/*
+package can.touch;/*
  * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
  *
  * THIS SOFTWARE CONTAINS PROPRIETARY AND CONFIDENTIAL INFORMATION OWNED BY PALANTIR TECHNOLOGIES INC.
@@ -25,50 +25,16 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package can.touch;
 
-import cannot.touch.EmailService;
-import cannot.touch.TextService;
+import org.skife.jdbi.v2.StatementContext;
+import org.skife.jdbi.v2.tweak.ResultSetMapper;
 
-import java.util.List;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class OfferService {
-    private final CustomerRepository repository;
-    private final EmailService emailService;
-    private final TextService textService;
-
-    public OfferService(CustomerRepository repository, EmailService emailService, TextService textService) {
-        this.repository = repository;
-        this.emailService = emailService;
-        this.textService = textService;
-    }
-
-    public void sendOffers() {
-        List<TotalOrderValue> values = repository.getTotalOrderValues();
-        for (TotalOrderValue elem : values) {
-            if (elem.getOrderTotal() > 9000) {
-                sendOffer(elem.getCustomerId(), 50);
-            } else if (elem.getOrderTotal() > 1000) {
-                sendOffer(elem.getCustomerId(), 40);
-            }
-        }
-    }
-
-    private void sendOffer(int id, int percentage) {
-        String text = "Congratulations! You will receive a " + percentage + "% discount on your next order!";
-        String contact = repository.getCustomer(id).getContact();
-        if (contact == null) {
-            return;
-        }
-
-        if (isEmail(contact)) {
-            emailService.sendEmail(contact, text);
-        } else {
-            textService.sendMessage(contact, text);
-        }
-    }
-
-    private boolean isEmail(String email) {
-        return email.contains("@");
+public class TotalOrderValueMapper implements ResultSetMapper<TotalOrderValue> {
+    @Override
+    public TotalOrderValue map(int index, ResultSet r, StatementContext ctx) throws SQLException {
+        return new TotalOrderValue(r.getInt("customer_id"), r.getInt("value"));
     }
 }

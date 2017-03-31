@@ -35,16 +35,23 @@ import can.touch.TotalOrderValue;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 public class OfferServiceShould {
     private static final int ID = 123;
     private static final int VALUE = 9500;
-    private static final Customer AARON = new Customer(ID, "aaron", "aaron@email.test");
+    private static final Customer AARON = new Customer(ID, "Aaron", "contact@email.test");
+    private static final Customer BOB = new Customer(15, "Bob", "123456");
+    private static final Customer CAROL = new Customer(20, "Carol", null);
+    private static final Customer DAVE = new Customer(30, "Dave", "aaaaaaa");
 
-    private final TotalOrderValue totalOrderValue = new TotalOrderValue(ID, VALUE);
+    private final TotalOrderValue firstOrder = new TotalOrderValue(ID, VALUE);
+    private final TotalOrderValue secondOrder = new TotalOrderValue(BOB.getId(), 1500);
+    private final TotalOrderValue thirdOrder = new TotalOrderValue(CAROL.getId(), 15000);
+    private final TotalOrderValue fourthOrder = new TotalOrderValue(DAVE.getId(), 100);
 
     private final CustomerRepository repository = mock(CustomerRepository.class);
     private final EmailService emailService = mock(EmailService.class);
@@ -54,11 +61,49 @@ public class OfferServiceShould {
 
     @Test public void
     email_50_percent_offers_to_clients_with_an_email_address_and_over_9000_dollars_worth_of_orders() {
-        when(repository.getTotalOrderValues()).thenReturn(ImmutableList.of(totalOrderValue));
+        when(repository.getTotalOrderValues()).thenReturn(ImmutableList.of(firstOrder));
         when(repository.getCustomer(ID)).thenReturn(AARON);
 
         offers.sendOffers();
 
         verify(emailService).sendEmail(AARON.getContact(), "Congratulations! You will receive a 50% discount on your next order!");
+    }
+
+    @Test public void
+    email_40_percent_offers_to_clients_with_an_email_address_and_5000_worth_of_orders() {
+        List<TotalOrderValue> result = new ArrayList<TotalOrderValue>();
+        result.add(firstOrder);
+        result.add(secondOrder);
+        when(repository.getTotalOrderValues()).thenReturn(result);
+        when(repository.getCustomer(ID)).thenReturn(AARON);
+        when(repository.getCustomer(BOB.getId())).thenReturn(BOB);
+
+        offers.sendOffers();
+        verify(emailService).sendEmail(AARON.getContact(), "Congratulations! You will receive a 50% discount on your next order!");
+        verify(textService).sendMessage(BOB.getContact(), "Congratulations! You will receive a 40% discount on your next order!");
+    }
+
+    @Test public void
+    send_nothing_to_customers_with_no_contacts() {
+        List<TotalOrderValue> result = new ArrayList<TotalOrderValue>();
+        when(repository.getTotalOrderValues()).thenReturn(ImmutableList.of(thirdOrder));
+        when(repository.getCustomer(CAROL.getId())).thenReturn(CAROL);
+
+        offers.sendOffers();
+
+        verifyZeroInteractions(emailService);
+        verifyZeroInteractions(textService);
+    }
+
+    @Test public void
+    send_nothing_to_customers_below_spending_minimum() {
+        List<TotalOrderValue> result = new ArrayList<TotalOrderValue>();
+        when(repository.getTotalOrderValues()).thenReturn(ImmutableList.of(fourthOrder));
+        when(repository.getCustomer(DAVE.getId())).thenReturn(DAVE);
+
+        offers.sendOffers();
+
+        verifyZeroInteractions(emailService);
+        verifyZeroInteractions(textService);
     }
 }
